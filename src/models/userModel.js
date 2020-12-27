@@ -13,7 +13,7 @@ const userSchema = new Schema({
     },
     hashPassword: {type: String, required: true},
     created: {type: Date, default: Date.now},
-    inSubscribed: {type: Boolean, default: false},
+    isSubscribed: {type: Boolean, default: false},
     completedLesson: [Number]
 });
 
