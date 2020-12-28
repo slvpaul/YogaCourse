@@ -13,23 +13,15 @@ import {
 import { Link, Redirect } from 'react-router-dom';
 import { useStyles } from '../styles/styles';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
-import { useState, useEffect } from 'react';
-import { useUser } from '../lib/hooks';
+import { useState } from 'react';
 
 export default function SignUp(props) {
     const classes = useStyles(props);
-    const [user, { mutate }] = useUser();
     const [errorMsg, setErrorMsg] = useState('');
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        if (user) {
-            return (
-                <Redirect to='/profile' />
-            )
-        } 
-    })
+    
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -45,8 +37,9 @@ export default function SignUp(props) {
         });
         if (res.status === 201) {
             const userObj = await res.json();
-            mutate(userObj);
+            res.send(userObj);
             setSuccess(true);
+            return <Redirect to='signIn' />
         } else {
             setErrorMsg(await res.text());
         }

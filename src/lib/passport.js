@@ -1,18 +1,18 @@
-import passport from 'passport';
-import bcrypt from 'bcryptjs';
-import { Strategy as LocalStrategy} from 'passport-local';
-import { ObjectId } from 'mongodb';
+const passport = require('passport');
+const ObjectId = require('mongodb').ObjectId;
+const LocalStrategy = require('passport-local').Strategy;
+const bcrypt = require('bcryptjs');
 
 passport.serializeUser((user, done) => {
     done(null, user._id.toString());
-});
-
-passport.deserializeUser((req, id, done) => {
+  });
+  
+  passport.deserializeUser((req, id, done) => {
     req.db.collection('users')
     .findOne(ObjectId(id)).then((user) => done(null,user));
-});
-
-passport.use(
+  });
+  
+  passport.use(
     new LocalStrategy(
         { usernameField: 'email', passReqToCallback: true },
         async (req, email, password, done) => {
@@ -22,6 +22,4 @@ passport.use(
             else done (null, false)
         },
     ),
-);
-
-export default passport;
+  );
