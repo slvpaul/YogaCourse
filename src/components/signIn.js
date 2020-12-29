@@ -8,7 +8,6 @@ import {
     Box, 
     Typography, 
     Container,
-    CircularProgress
 } from '@material-ui/core';
 import { useStyles } from '../styles/styles';
 import LockOutLinedIcon from '@material-ui/icons/LockOutlined';
@@ -18,19 +17,27 @@ import { Link, Redirect } from 'react-router-dom';
 export default function SignIn(props) {
     const classes = useStyles(props);
     const [errorMsg, setErrorMsg] = useState('');
-    const [success, setSuccess] = useState(false);
-    const [loading, setLoading] = useState(false);
-
 
     async function handleSubmit(event) {
+        event.preventDefault();
 
-    };
+        const body = {
+            email: event.currentTarget.email.value, 
+            password: event.currentTarget.password.value
+        }
 
-    async function handleClick() {
-        setLoading(true);
-        if(success === true) {
-            setLoading(false);
-        };
+        const response = await fetch('http://localhost:8080/signin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+        });
+
+        if(response.status === 200) {
+            return response.json();
+        } else {
+            setErrorMsg('Incorrect username or password.')
+        }
+
     };
 
 
@@ -72,8 +79,6 @@ export default function SignIn(props) {
                             />
                         </Grid>
                         <Button
-                            onClick={handleClick}
-                            disabled={loading}
                             type="submit"
                             fullWidth
                             variant="contained"
@@ -81,7 +86,6 @@ export default function SignIn(props) {
                         >
                         Sign in
                         </Button>
-                        {loading && <CircularProgress size={24} className={classes.buttonProgress}/>}
                         <Grid item>
                             <Link to='signUp'>
                             <Typography className={classes.gosignin}>Don't have an account? Sign up</Typography>

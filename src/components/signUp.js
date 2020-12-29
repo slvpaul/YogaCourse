@@ -8,48 +8,32 @@ import {
     Box, 
     Typography, 
     Container,
-    CircularProgress
 } from '@material-ui/core';
 import { Link, Redirect } from 'react-router-dom';
 import { useStyles } from '../styles/styles';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function SignUp(props) {
     const classes = useStyles(props);
     const [errorMsg, setErrorMsg] = useState('');
-    const [success, setSuccess] = useState(false);
-    const [loading, setLoading] = useState(false);
-
-    
 
     async function handleSubmit(event) {
         event.preventDefault();
         const body = {
-            email: event.currentTarget.email.value,
+            email: event.currentTarget.email.value, 
             password: event.currentTarget.password.value
-        }
-
-        const res = await fetch('/signup', {
+        };
+        const response = await fetch('http://localhost:8080/signup', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(body)
         });
-        if (res.status === 201) {
-            const userObj = await res.json();
-            res.send(userObj);
-            setSuccess(true);
-            return <Redirect to='signIn' />
-        } else {
-            setErrorMsg(await res.text());
-        }
-    };
-
-    async function handleClick() {
-        setLoading(true);
-        if(success === true) {
-            setLoading(false);
-        };
+         if(response.status === 200) {
+         return response.json();
+         } else {
+             setErrorMsg('Could not create account');
+         };
     };
 
     return (
@@ -63,7 +47,7 @@ export default function SignUp(props) {
                     Sign up
                 </Typography>
                 <form onSubmit={handleSubmit} className={classes.form}>
-                    {errorMsg ? <Typography color='red'>{errorMsg}</Typography> : null}
+                    {errorMsg ? <Typography>{errorMsg}</Typography> : null}
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <TextField
@@ -90,8 +74,6 @@ export default function SignUp(props) {
                             />
                         </Grid>
                         <Button
-                            onClick={handleClick}
-                            disabled={loading}
                             type="submit"
                             fullWidth
                             variant="contained"
@@ -99,7 +81,6 @@ export default function SignUp(props) {
                         >
                         Sign up
                         </Button>
-                        {loading && <CircularProgress size={24} className={classes.buttonProgress}/>}
                         <Grid item>
                             <Link to='signIn'>
                             <Typography className={classes.gosignin}>Already have an account? Sign in</Typography>
