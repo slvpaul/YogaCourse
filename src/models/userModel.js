@@ -14,7 +14,7 @@ const userSchema = new Schema({
     password: {type: String, required: true},
     created: {type: Date, default: Date.now},
     isSubscribed: {type: Boolean, default: false},
-    completedLesson: [Number]
+    completedLesson: {type: Number, default: 0}
 });
 
 userSchema.methods.comparePassword = function(password) {

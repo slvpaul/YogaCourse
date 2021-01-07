@@ -10,13 +10,52 @@ import {
     Container,
 } from '@material-ui/core';
 import { Link, Redirect } from 'react-router-dom';
-import { useStyles } from '../styles/styles';
+import { makeStyles } from '@material-ui/styles';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import axios from 'axios';
+import theme from '../styles/theme';
 
-export default function SignUp(props) {
-    const classes = useStyles(props);
+
+const useStyles = makeStyles(() => ({
+    paper: {
+        [theme.breakpoints.down('sm')] : {
+            marginTop: theme.spacing(8),
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+
+        },
+    },
+
+    avatar: {
+        [theme.breakpoints.down('sm')] : {
+            margin: theme.spacing(1),
+            backgroundColor: theme.palette.secondary.main
+
+        },
+    },
+
+    form: {
+        width: '100%',
+        marginTop: theme.spacing(3)
+    },
+
+    submit : {
+        margin: theme.spacing(3, 0, 2),
+        backgroundColor: theme.palette.secondary.main
+    },
+
+    gosignin: {
+        fontSize: '12px',
+    }
+}));
+
+export default function SignUp({isLoggedIn}) {
+    const classes = useStyles();
     const [errorMsg, setErrorMsg] = useState('');
+    const [accountCreated, setAccountCreated] = useState(false);
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -24,20 +63,26 @@ export default function SignUp(props) {
             email: event.currentTarget.email.value, 
             password: event.currentTarget.password.value
         };
-        const response = await fetch('http://localhost:8080/signup', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(body)
-        });
-         if(response.status === 200) {
-         return response.json();
-         } else {
-             setErrorMsg('Could not create account');
-         };
+        axios.post('http://localhost:8080/signup', {
+            email: body.email,
+            password: body.password
+        }).then(response => {
+            console.log(response)
+            if(!response.data.errmsg) {
+                setAccountCreated(true);
+            } else {
+                console.log('Email already used')
+            }
+        }).catch(error => {
+            setErrorMsg('error');
+        })
     };
 
     return (
         <Container component='main' maxWidth='xs'>
+            {accountCreated && <Redirect to='signIn' />}
+            {isLoggedIn ? <Redirect to='profile' /> : 
+            <>
             <CssBaseline />
             <Box className={classes.paper}>
                 <Avatar className={classes.avatar}>
@@ -89,6 +134,8 @@ export default function SignUp(props) {
                     </Grid>
                 </form>
             </Box>
+            </>
+}
         </Container>
     )
     }

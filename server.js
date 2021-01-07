@@ -3,11 +3,11 @@ const normalizeEmail = require('validator/lib/normalizeEmail')
 const isEmail = require('validator/lib/isEmail');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
-const ObjectId = require('mongodb').ObjectId;
 const LocalStrategy = require('passport-local').Strategy;
-const cors = require('cors');
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
+const flash = require('connect-flash');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
@@ -24,43 +24,86 @@ mongoose.connect(MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true})
 mongoose.Promise = global.Promise;
 const db = mongoose.connection
 
+// Middleware
 app.use(session({
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     store: new MongoStore({ mongooseConnection: db })
 }));
-app.use(bodyParser.json(), cors());
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+  optionsSuccessStatus: 200
+}
+app.use(cors(corsOptions), bodyParser.json());
+app.options('*', cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'build')));
+app.use(flash());
 
 // Passport
 passport.serializeUser((user, done) => {
-  done(null, user._id.toString());
+  console.log('serialize');
+  console.log(user);
+  console.log('--------');
+  done(null, { _id: user._id });
 });
 
-passport.deserializeUser((req, id, done) => {
-  db.collection('users')
-  .findOne(ObjectId(id)).then((user) => done(null,user));
+passport.deserializeUser((id, done) => {
+  User.findOne(
+    { _id: id },
+    'email',
+    (err, user) => {
+      console.log('deserialize');
+      console.log(user);
+      console.log('--------');
+      done(null, user)
+    }
+  )
 });
 
-passport.use( new LocalStrategy(
-      { usernameField: 'email', passReqToCallback: true },
-      async (req, email, password, done) => {
-          const user = await db.collection('users').findOne({ email });
-          if (user && (await bcrypt.compare(password, user.password)))
-          done(null, user);
-          else done (null, false)
-      },
-  ),
-);
+passport.use( new LocalStrategy({ usernameField: 'email'},
+        function ( email, password, done) {
+          User.findOne({ email: email }, (err, user) => {
+            if(err) {
+              return done(err);
+            }
+            if (!user) {
+              return done(null, false, { message: 'Incorrect username' })
+            }
+            if (user && (bcrypt.compare(password, user.password))) {
+              return done(null, user)
+            } 
+            else return done(null, false, {message: 'Incorrect password'});
+          })
+      }));
 
 // Routes
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
  });
+ app.get('/user', (req, res, next) => {
+    if(req.user) {
+      res.json({ user: req.user })
+    } else {
+      res.json({ user: null })
+    }
+ });
+ app.get('/user/:email', (req, res, next) => {
+   console.log(req.params.email);
+   User.findOne({ email: req.params.email }, function(err, user) {
+     if(err) {
+       console.log(err)
+     } else {
+       res.send(user)
+       console.log('Result : ', user);
+     }
+     
+     });
+   });
  app.post('/signup', async (req, res) => {
     const newUser = new User(req.body);
     const password = req.body.password;
@@ -88,9 +131,20 @@ app.get("/", (req, res) => {
       }
   });
 });
-app.post('/signin', passport.authenticate('local'), (req, res) => {
-  
-  
+app.post('/signin', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { return next(err); }
+    if (!user) { return next(err); }
+    req.logIn(user, function(err) {
+      if(err) { return next(err); }
+      const userInfo = req.user;
+      res.send(userInfo);
+    });
+  }) (req, res, next);
+});
+app.delete('/signout', (req, res) => {
+  req.logOut();
+  res.status(204).end();
 });
 
 app.use(function (req, res, next) {

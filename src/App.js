@@ -1,68 +1,98 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router,
          Switch,
          Route,
-         Link
         } from 'react-router-dom';
 import { Container, Box } from '@material-ui/core';
-import { useStyles } from './styles/styles';
+import { makeStyles } from '@material-ui/styles';
 import Home from './components/home';
 import SignUp from './components/signUp';
 import SignIn from './components/signIn';
 import Profile from './components/profile';
 import Settings from './components/settings';
+import axios from 'axios';
+import Navbar from './components/navbar';
+import theme from './styles/theme';
 
-export default function App(props) {
-  const classes = useStyles(props);
+const useStyles = makeStyles(() => ({
+  root: {
+    [theme.breakpoints.down('sm')] : {
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f0ecdf'
+
+    },
+},
+container: {
+    [theme.breakpoints.down('sm')] : {
+        width: '75vw',
+        height: '75vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+        fontFamily: 'Roboto',
+
+    },
+
+},
+}));
+
+
+export default function App() {
+  const classes = useStyles();
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  function getUser() {
+    axios.get('http://localhost:8080/user', { withCredentials: true }).then(response => {
+      if(response.data.user) {
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+      }
+    })
+  }
+
+  useEffect(() => {
+    getUser();
+  });
+
   return (
     <Router>
       <Box className={classes.root}>
       <Container className={classes.container}>
-        <nav className={classes.nav}>
-            <ul>
-                <li>
-                    <Link to='/'>Home</Link>
-                </li>
-                <li>
-                    <Link to='signUp'>Sign Up</Link>
-                </li>
-                <li>
-                    <Link to='signIn'>Sign In</Link>
-                </li>
-                <li>
-                    <Link to='signOut'>Sign Out</Link>
-                </li>
-            </ul>
-        </nav>
-
-        
+       <Navbar 
+       className={classes.nav} 
+       setLoggedInChild={setLoggedIn}
+       isLoggedIn={loggedIn}/>
 
         <Switch>
             <Route path='/profile'>
-              <Profile />
+              <Profile isLoggedIn={loggedIn}/>
             </Route>
             <Route path='/settings'>
-              <Settings />
+              <Settings isLoggedIn={loggedIn} />
             </Route>
             <Route path='/signUp'>
-                <SignUp />
+                <SignUp  
+                isLoggedIn={loggedIn}
+                />
             </Route>
             <Route path='/signIn'>
-                <SignIn />
-            </Route>
-            <Route path='/signOut'>
-              <SignOut />
+                <SignIn 
+                setLoggedInChild={setLoggedIn} 
+                isLoggedIn={loggedIn}
+                />
             </Route>
             <Route path='/'>
-                <Home />
+                <Home isLoggedIn={loggedIn}/>
             </Route>
         </Switch>
         </Container>
         </Box>
 </Router>
 );
-}
-
-function SignOut() {
-return <h2>Sign Out</h2>
 }

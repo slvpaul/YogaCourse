@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
     Avatar, 
     Button, 
@@ -9,14 +9,52 @@ import {
     Typography, 
     Container,
 } from '@material-ui/core';
-import { useStyles } from '../styles/styles';
 import LockOutLinedIcon from '@material-ui/icons/LockOutlined';
-import { useState, useEffect } from 'react';
 import { Link, Redirect } from 'react-router-dom';
+import axios from 'axios';
+import { makeStyles } from '@material-ui/styles';
+import theme from '../styles/theme';
 
-export default function SignIn(props) {
-    const classes = useStyles(props);
+const useStyles = makeStyles(() => ({
+    paper: {
+        [theme.breakpoints.down('sm')] : {
+            marginTop: theme.spacing(8),
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+
+        },
+    },
+
+    avatar: {
+        [theme.breakpoints.down('sm')] : {
+            margin: theme.spacing(1),
+            backgroundColor: theme.palette.secondary.main
+
+        },
+    },
+
+    form: {
+        width: '100%',
+        marginTop: theme.spacing(3)
+    },
+
+    submit : {
+        margin: theme.spacing(3, 0, 2),
+        backgroundColor: theme.palette.secondary.main
+    },
+
+    gosignin: {
+        fontSize: '12px',
+    }
+}))
+
+
+export default function SignIn({ isLoggedIn, setLoggedInChild }) {
+    const classes = useStyles();
     const [errorMsg, setErrorMsg] = useState('');
+
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -26,23 +64,26 @@ export default function SignIn(props) {
             password: event.currentTarget.password.value
         }
 
-        const response = await fetch('http://localhost:8080/signin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify(body)
-        });
-
-        if(response.status === 200) {
-            return response.json();
-        } else {
-            setErrorMsg('Incorrect username or password.')
-        }
+        axios.post('http://localhost:8080/signin', {
+            email: body.email,
+            password: body.password
+        }, { withCredentials: true })
+        .then(response => {
+            if(response.status === 200) {
+                setLoggedInChild(true);
+                window.location.reload();
+            }
+        }).catch(error => {
+            setErrorMsg('error');
+        })
 
     };
 
-
+    
     return (
         <Container component='main' maxWidth="xs">
+        {isLoggedIn ? <Redirect to='profile' /> : 
+        <>
             <CssBaseline />
             <Box className={classes.paper}>
                 <Avatar className={classes.avatar}>
@@ -52,7 +93,7 @@ export default function SignIn(props) {
                     Sign in
                 </Typography>
                 <form onSubmit={handleSubmit} className={classes.form}>
-                    {errorMsg ? <Typography color='red'>{errorMsg}</Typography> : null}
+                    {errorMsg ? <Typography>{errorMsg}</Typography> : null}
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <TextField
@@ -94,6 +135,8 @@ export default function SignIn(props) {
                         </Grid>
         </form>
         </Box>
+        </>
+}
         </Container>
     )
 }

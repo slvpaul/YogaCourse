@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 
 
-export default function Home(props) {
+export default function Home(props, loggedIn) {
     const classes = useStyles(props);
 
     return (
@@ -14,9 +14,12 @@ export default function Home(props) {
           <Logo />
           <Typography className={classes.header} variant='h5' component='h1'>Welcome to the Buddha Energy App!</Typography>
           <Typography className={classes.paragraph} variant='h6' component='h2'>With this app, you can learn how to meditate and access the hidden energies of the body</Typography>
-          <Link to='signUp'>
+          {loggedIn ? <Link to='profile'>
           <ArrowForwardIcon className={classes.arrow} fontSize={'large'}/>
           </Link>
+          : <Link to='signUp'>
+          <ArrowForwardIcon className={classes.arrow} fontSize={'large'}/>
+          </Link>}
 
       </Box>
     );
