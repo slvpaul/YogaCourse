@@ -85,6 +85,7 @@ passport.use( new LocalStrategy({ usernameField: 'email'},
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
  });
+// Get authenticated user
  app.get('/user', (req, res, next) => {
     if(req.user) {
       res.json({ user: req.user })
@@ -92,6 +93,7 @@ app.get("/", (req, res) => {
       res.json({ user: null })
     }
  });
+ // Get user object
  app.get('/user/:email', (req, res, next) => {
    console.log(req.params.email);
    User.findOne({ email: req.params.email }, function(err, user) {
@@ -104,6 +106,41 @@ app.get("/", (req, res) => {
      
      });
    });
+// Increment lesson progress
+ app.post('/user/:email', (req, res) => {
+   User.findOne({ email: req.params.email}, function(err, user) {
+     if(err) {
+       console.log(err)
+     } else {
+       user.completedLesson = user.completedLesson + 1;
+       user.save().then(savedUser => {
+         if(err) {
+           console.log(err)
+         } else {
+           res.send(savedUser);
+         }
+       })
+     }
+   })
+  });
+// Reset lesson progress
+  app.post('/reset/:email', (req, res) => {
+    User.findOne({ email: req.params.email}, function(err, user) {
+      if(err) {
+        console.log(err)
+      } else {
+        user.completedLesson = 0;
+        user.save().then(savedUser => {
+          if(err) {
+            console.log(err)
+          } else {
+            res.send(savedUser);
+          }
+        })
+      }
+    })
+  });
+// Register new user
  app.post('/signup', async (req, res) => {
     const newUser = new User(req.body);
     const password = req.body.password;
@@ -131,6 +168,7 @@ app.get("/", (req, res) => {
       }
   });
 });
+// Authenticate user
 app.post('/signin', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
     if (err) { return next(err); }
@@ -142,16 +180,17 @@ app.post('/signin', function(req, res, next) {
     });
   }) (req, res, next);
 });
+// Logout user
 app.delete('/signout', (req, res) => {
   req.logOut();
   res.status(204).end();
 });
-
+// Error handler
 app.use(function (req, res, next) {
   res.status(404).send("Sorry can't find that!")
 });
 
-
+// Start server
 app.listen(8080);
 console.log(`Listening on 8080`);
 

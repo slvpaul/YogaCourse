@@ -10,30 +10,25 @@ import {
     Container,
 } from '@material-ui/core';
 import LockOutLinedIcon from '@material-ui/icons/LockOutlined';
-import { Link, Redirect } from 'react-router-dom';
+import { Link, Redirect, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/styles';
 import theme from '../styles/theme';
 
 const useStyles = makeStyles(() => ({
     paper: {
-        [theme.breakpoints.down('sm')] : {
             marginTop: theme.spacing(8),
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             textAlign: 'center'
-
-        },
     },
 
     avatar: {
-        [theme.breakpoints.down('sm')] : {
-            margin: theme.spacing(1),
-            backgroundColor: theme.palette.secondary.main
-
-        },
-    },
+        margin: theme.spacing(1),
+        color: 'white',
+        backgroundColor: theme.palette.secondary.main
+},
 
     form: {
         width: '100%',
@@ -42,7 +37,11 @@ const useStyles = makeStyles(() => ({
 
     submit : {
         margin: theme.spacing(3, 0, 2),
-        backgroundColor: theme.palette.secondary.main
+        color: 'white',
+        backgroundColor: theme.palette.secondary.main,
+        '&:hover': {
+            backgroundColor: theme.palette.secondary.dark
+        },
     },
 
     gosignin: {
@@ -53,6 +52,7 @@ const useStyles = makeStyles(() => ({
 
 export default function SignIn({ isLoggedIn, setLoggedInChild }) {
     const classes = useStyles();
+    const history = useHistory();
     const [errorMsg, setErrorMsg] = useState('');
 
 
@@ -71,7 +71,7 @@ export default function SignIn({ isLoggedIn, setLoggedInChild }) {
         .then(response => {
             if(response.status === 200) {
                 setLoggedInChild(true);
-                window.location.reload();
+                history.push('/dashboard');
             }
         }).catch(error => {
             setErrorMsg('error');
@@ -82,7 +82,7 @@ export default function SignIn({ isLoggedIn, setLoggedInChild }) {
     
     return (
         <Container component='main' maxWidth="xs">
-        {isLoggedIn ? <Redirect to='profile' /> : 
+        {isLoggedIn ? <Redirect to='/dashboard' /> : 
         <>
             <CssBaseline />
             <Box className={classes.paper}>

@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router,
          Switch,
          Route,
+         Redirect,
         } from 'react-router-dom';
-import { Container, Box } from '@material-ui/core';
+import { Container, Box, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import Home from './components/home';
 import SignUp from './components/signUp';
 import SignIn from './components/signIn';
-import Profile from './components/profile';
+import Dashboard from './components/dashboard';
 import Settings from './components/settings';
 import axios from 'axios';
 import Navbar from './components/navbar';
@@ -22,23 +23,51 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f0ecdf'
+        backgroundColor: '#e4e8f0',
 
     },
+    [theme.breakpoints.up('sm')] : {
+      width: '100vw',
+      height: '100vh',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#e4e8f0'
+
+  },
 },
 container: {
     [theme.breakpoints.down('sm')] : {
         width: '75vw',
         height: '75vh',
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
         fontFamily: 'Roboto',
 
     },
+    [theme.breakpoints.up('sm')] : {
+      width: '75vw',
+      height: '75vh',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center',
+      fontFamily: 'Roboto',
 
+  }
 },
+nav : {
+    position: 'top'
+},
+hidden: {
+  [theme.breakpoints.down('sm')]: {
+    display: 'none'
+  }
+}
 }));
 
 
@@ -61,17 +90,21 @@ export default function App() {
   });
 
   return (
+    
     <Router>
-      <Box className={classes.root}>
-      <Container className={classes.container}>
+      {loggedIn && <Redirect to='/dashboard' />}
        <Navbar 
        className={classes.nav} 
        setLoggedInChild={setLoggedIn}
-       isLoggedIn={loggedIn}/>
+       isLoggedIn={loggedIn} 
+       />
+      <Box className={classes.root}>
+      <Container className={classes.container}>
+      
 
         <Switch>
-            <Route path='/profile'>
-              <Profile isLoggedIn={loggedIn}/>
+            <Route path='/dashboard'>
+              <Dashboard isLoggedIn={loggedIn}/>
             </Route>
             <Route path='/settings'>
               <Settings isLoggedIn={loggedIn} />
@@ -88,7 +121,10 @@ export default function App() {
                 />
             </Route>
             <Route path='/'>
-                <Home isLoggedIn={loggedIn}/>
+                <Grid container>
+                <Grid item md={6} sm={12} xs={12} ><Home isLoggedIn={loggedIn}/></Grid>
+                {loggedIn ? <Dashboard /> : <Grid className={classes.hidden} item md={6}><SignUp /></Grid>}
+                </Grid>
             </Route>
         </Switch>
         </Container>

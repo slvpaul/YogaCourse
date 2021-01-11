@@ -60,6 +60,10 @@ const useStyles = makeStyles({
             marginTop: '50px'
 
         },
+        [theme.breakpoints.up('md')]: {
+            display: 'none'
+
+        }
     },
 
     paper: {
@@ -72,6 +76,13 @@ const useStyles = makeStyles({
 
         },
     },
+    homeContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        marginTop: '100px'
+},
 
     avatar: {
         [theme.breakpoints.down('sm')] : {

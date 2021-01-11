@@ -9,7 +9,7 @@ import {
     Typography, 
     Container,
 } from '@material-ui/core';
-import { Link, Redirect } from 'react-router-dom';
+import { Link, Redirect, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import { useState } from 'react';
@@ -27,14 +27,20 @@ const useStyles = makeStyles(() => ({
             textAlign: 'center'
 
         },
+        [theme.breakpoints.up('sm')] : {
+            marginTop: theme.spacing(8),
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+
+        },
     },
 
     avatar: {
-        [theme.breakpoints.down('sm')] : {
             margin: theme.spacing(1),
+            color: 'white',
             backgroundColor: theme.palette.secondary.main
-
-        },
     },
 
     form: {
@@ -44,32 +50,50 @@ const useStyles = makeStyles(() => ({
 
     submit : {
         margin: theme.spacing(3, 0, 2),
-        backgroundColor: theme.palette.secondary.main
+        color: 'white',
+        backgroundColor: theme.palette.secondary.main,
+        '&:hover': {
+            backgroundColor: theme.palette.secondary.dark
+        },
     },
 
     gosignin: {
         fontSize: '12px',
+    },
+    
+    alert: {
+        color: 'red',
+        marginTop: '100px',
+        fontSize: '1.5em'
     }
 }));
 
 export default function SignUp({isLoggedIn}) {
     const classes = useStyles();
     const [errorMsg, setErrorMsg] = useState('');
-    const [accountCreated, setAccountCreated] = useState(false);
+    const [success, setSuccess] = useState(null);
+    const [accountCreated, setAccountCreated] = useState(null);
+    const history = useHistory();
 
     async function handleSubmit(event) {
         event.preventDefault();
         const body = {
+            name: event.currentTarget.name.value,
             email: event.currentTarget.email.value, 
             password: event.currentTarget.password.value
         };
         axios.post('http://localhost:8080/signup', {
+            name: body.name,
             email: body.email,
             password: body.password
         }).then(response => {
             console.log(response)
             if(!response.data.errmsg) {
-                setAccountCreated(true);
+                setSuccess(true);
+                setTimeout(() => {
+                    setAccountCreated(true);
+                    history.push('/signIn');
+                }, 3000);
             } else {
                 console.log('Email already used')
             }
@@ -80,8 +104,9 @@ export default function SignUp({isLoggedIn}) {
 
     return (
         <Container component='main' maxWidth='xs'>
-            {accountCreated && <Redirect to='signIn' />}
-            {isLoggedIn ? <Redirect to='profile' /> : 
+            {success && <Typography className={classes.alert}>Account created successfully! Please sign in</Typography>}
+            {accountCreated && <Redirect to='/signIn' />}
+            {isLoggedIn ? <Redirect to='/dashboard' /> : 
             <>
             <CssBaseline />
             <Box className={classes.paper}>
@@ -94,6 +119,18 @@ export default function SignUp({isLoggedIn}) {
                 <form onSubmit={handleSubmit} className={classes.form}>
                     {errorMsg ? <Typography>{errorMsg}</Typography> : null}
                     <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                            <TextField
+                                helperText="Please enter your name"
+                                name="name"
+                                variant="outlined"
+                                required
+                                fullWidth
+                                id="name"
+                                label="Name"
+                                autoFocus
+                            />
+                        </Grid>
                         <Grid item xs={12}>
                             <TextField
                                 helperText="Please enter your email address"
