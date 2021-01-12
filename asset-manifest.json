@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.js": "/YogaCourse/static/js/main.d724ba01.chunk.js",
+    "main.js.map": "/YogaCourse/static/js/main.d724ba01.chunk.js.map",
+    "runtime-main.js": "/YogaCourse/static/js/runtime-main.f8fe5fae.js",
+    "runtime-main.js.map": "/YogaCourse/static/js/runtime-main.f8fe5fae.js.map",
+    "static/css/2.37de3d74.chunk.css": "/YogaCourse/static/css/2.37de3d74.chunk.css",
+    "static/js/2.b59dc205.chunk.js": "/YogaCourse/static/js/2.b59dc205.chunk.js",
+    "static/js/2.b59dc205.chunk.js.map": "/YogaCourse/static/js/2.b59dc205.chunk.js.map",
+    "index.html": "/YogaCourse/index.html",
+    "static/css/2.37de3d74.chunk.css.map": "/YogaCourse/static/css/2.37de3d74.chunk.css.map",
+    "static/js/2.b59dc205.chunk.js.LICENSE.txt": "/YogaCourse/static/js/2.b59dc205.chunk.js.LICENSE.txt",
+    "static/media/index.css": "/YogaCourse/static/media/roboto-vietnamese-400-normal.52cebac0.woff2"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.f8fe5fae.js",
+    "static/css/2.37de3d74.chunk.css",
+    "static/js/2.b59dc205.chunk.js",
+    "static/js/main.d724ba01.chunk.js"
+  ]
+}
