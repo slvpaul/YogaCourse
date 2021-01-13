@@ -191,7 +191,11 @@ app.use(function (req, res, next) {
 });
 
 // Start server
-app.listen(8080);
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 8080;
+}
+app.listen(port);
 console.log(`Listening on 8080`);
 
 module.exports = app;
