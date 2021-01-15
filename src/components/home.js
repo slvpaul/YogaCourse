@@ -15,6 +15,29 @@ const useStyles = makeStyles(() => ({
         display: 'none'
 
     }
+    
+},
+
+  homeContainer: {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  textAlign: 'center',
+  marginTop: '100px'
+},
+
+header: {
+  [theme.breakpoints.down('sm')] : {
+      margin: '5px'
+
+  },
+},
+
+paragraph: {
+  [theme.breakpoints.down('sm')] : {
+      marginTop: '20px'
+
+  },
 },
 }));
 
