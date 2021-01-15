@@ -1,14 +1,26 @@
 import { Box, Typography } from '@material-ui/core';
 import Logo from './logo';
-import { useStyles } from '../styles/styles';
+import { makeStyles } from '@material-ui/styles';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { Link } from 'react-router-dom';
+import theme from '../styles/theme';
+
+const useStyles = makeStyles(() => ({
+  arrow : {
+    [theme.breakpoints.down('sm')] : {
+        marginTop: '50px'
+
+    },
+    [theme.breakpoints.up('md')]: {
+        display: 'none'
+
+    }
+},
+}));
 
 
-
-
-export default function Home(props, isloggedIn) {
-    const classes = useStyles(props);
+export default function Home(isloggedIn) {
+    const classes = useStyles();
 
     return (
       <Box className={classes.homeContainer}>
