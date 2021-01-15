@@ -1,3 +1,4 @@
+require('dotenv').config();
 const User = require('./src/models/userModel');
 const normalizeEmail = require('validator/lib/normalizeEmail')
 const isEmail = require('validator/lib/isEmail');
@@ -12,7 +13,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const path = require('path');
-require('dotenv').config();
+
 
 const app = express();
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -192,7 +193,7 @@ app.use(function (req, res, next) {
 
 // Start server
 let port = process.env.PORT;
-if (port == null || port == "") {
+if (port == null || port === "") {
   port = 8080;
 }
 app.listen(port);
