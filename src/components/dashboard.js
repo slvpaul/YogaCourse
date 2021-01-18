@@ -109,7 +109,7 @@ export default function Dashboard({ isLoggedIn }) {
     };
 
     async function resetLesson() {
-        axios.post(`/user/${userEmail}`, { withCredentials: true })
+        axios.post(`/reset/${userEmail}`, { withCredentials: true })
         .then(response => {
             const { completedLesson } = response.data;
             setUserLesson(completedLesson);
