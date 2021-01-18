@@ -67,7 +67,7 @@ export default function Navbar({ isLoggedIn, setLoggedInChild }) {
 
     function handleLogout(event) {
         event.preventDefault()
-        axios.delete('http://localhost:8080/signout', { withCredentials: true}).then(response => {
+        axios.delete('http://protected-peak-08686.herokuapp/signout', { withCredentials: true}).then(response => {
             if (response.status === 204) {
                 setLoggedInChild(false);
                 history.push('/');

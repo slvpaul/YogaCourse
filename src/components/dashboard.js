@@ -69,7 +69,7 @@ export default function Dashboard({ isLoggedIn }) {
     
     useEffect(() => {
         let isMounted = true;
-        axios.get('http://localhost:8080/user', {withCredentials: true})
+        axios.get('http://protected-peak-08686.herokuapp/user', {withCredentials: true})
         .then(response => {
             if(isMounted) {
                 if(response.data.user) {
@@ -81,7 +81,7 @@ export default function Dashboard({ isLoggedIn }) {
     }, []);
 
     async function nextLesson() {
-        await axios.post(`http://localhost:8080/user/${userEmail}`, { withCredentials: true})
+        await axios.post(`http://protected-peak-08686.herokuapp/user/${userEmail}`, { withCredentials: true})
         .then(response => {
             const { completedLesson } = response.data;
             setUserLesson(completedLesson);
@@ -96,7 +96,7 @@ export default function Dashboard({ isLoggedIn }) {
     };
 
     async function resumeLesson() {
-            await axios.get(`http://localhost:8080/user/${userEmail}`, { withCredentials: true })
+            await axios.get(`http://protected-peak-08686.herokuapp/user/${userEmail}`, { withCredentials: true })
             .then(response => {
                 const { completedLesson } = response.data;
                 setUserLesson(completedLesson);
@@ -109,7 +109,7 @@ export default function Dashboard({ isLoggedIn }) {
     };
 
     async function resetLesson() {
-        axios.post(`http://localhost:8080/reset/${userEmail}`, { withCredentials: true })
+        axios.post(`http://protected-peak-08686.herokuapp/${userEmail}`, { withCredentials: true })
         .then(response => {
             const { completedLesson } = response.data;
             setUserLesson(completedLesson);

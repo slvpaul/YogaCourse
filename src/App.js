@@ -76,7 +76,7 @@ export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   function getUser() {
-    axios.get('http://localhost:8080/user', { withCredentials: true }).then(response => {
+    axios.get('http://protected-peak-08686.herokuapp/user', { withCredentials: true }).then(response => {
       if(response.data.user) {
         setLoggedIn(true);
       } else {

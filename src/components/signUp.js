@@ -82,7 +82,7 @@ export default function SignUp({isLoggedIn}) {
             email: event.currentTarget.email.value, 
             password: event.currentTarget.password.value
         };
-        axios.post('http://localhost:8080/signup', {
+        axios.post('http://protected-peak-08686.herokuapp/signup', {
             name: body.name,
             email: body.email,
             password: body.password

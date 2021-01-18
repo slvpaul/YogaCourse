@@ -64,7 +64,7 @@ export default function SignIn({ isLoggedIn, setLoggedInChild }) {
             password: event.currentTarget.password.value
         }
 
-        axios.post('http://localhost:8080/signin', {
+        axios.post('http://protected-peak-08686.herokuapp/signin', {
             email: body.email,
             password: body.password
         }, { withCredentials: true })
